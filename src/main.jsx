@@ -11,6 +11,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import ProductContextProvider from "./context/ProductContext.jsx";
+import UploadPage from "./views/Upload.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -36,6 +37,7 @@ createRoot(document.getElementById("root")).render(
           />
           <Route path="/product/:productId" element={<ProductPage />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/upload" element={<UploadPage />} />
         </Routes>
         <ToastContainer />
       </div>

@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { db, storage } from "../config/firebase";
-import { collection, getDocs } from "firebase/firestore";
-import { getDownloadURL } from "firebase/storage";
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { getDownloadURL, uploadBytes } from "firebase/storage";
 import { ref } from "firebase/storage";
 
 export const ProductContext = createContext();
@@ -19,7 +19,7 @@ const ProductContextProvider = (props) => {
           images: doc.data().images,
           name: doc.data().name,
           price: doc.data().price,
-          size: doc.data().size,
+          sizes: doc.data().sizes,
         }));
 
         const updatedProducts = await Promise.all(
@@ -62,8 +62,28 @@ const ProductContextProvider = (props) => {
     getProducts();
   }, []);
 
+  const addProduct = async (productData, images) => {
+    try {
+      const imagePaths = await Promise.all(
+        images.map(async (image) => {
+          const imageRef = ref(storage, `images/${image.name}`);
+          await uploadBytes(imageRef, image);
+          return `images/${image.name}`;
+        })
+      );
+
+      const docRef = await addDoc(collection(db, "product"), {
+        ...productData,
+        images: imagePaths
+      });
+      console.log("Product added with ID:", docRef.id);
+    } catch (error) {
+      console.error("Error adding product:", error);
+    }
+  };
+
   return (
-    <ProductContext.Provider value={{ products }}>
+    <ProductContext.Provider value={{ products, addProduct }}>
       {props.children}
     </ProductContext.Provider>
   );

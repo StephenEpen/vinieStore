@@ -4,24 +4,19 @@ import { Link } from "react-router-dom";
 const ProductCard = ({ id, images, name, price }) => {
   return (
     <Link to={`/product/${id}`}>
-      <div className="group my-10 flex w-full max-w-xs flex-col overflow-hidden border border-gray-100 bg-white shadow-md rounded-lg">
-        <a className="relative flex h-60 overflow-hidden" href="#">
+      <div className="group my-10 flex flex-col w-[320px] overflow-hidden border border-gray-100 bg-white shadow-md rounded-lg">
+        <div className="relative flex h-60 overflow-hidden">
           <img
-            className="hover:scale-110 transition ease-in-out absolute top-0 right-0 h-full w-full object-cover"
+            className="hover:scale-110 transition-transform duration-300 absolute top-0 right-0 h-full w-full object-cover"
             src={images[0]}
             alt={name}
           />
-        </a>
+        </div>
         <div className="mt-4 px-5 pb-5">
-          <a href="#">
-            <h5 className="text-xl tracking-tight text-slate-900">{name}</h5>
-          </a>
+          <h5 className="text-xl tracking-tight text-slate-900">{name}</h5>
           <div className="mt-2 mb-5 flex items-center justify-between">
             <p>
-              <span className="text-3xl font-bold text-slate-900">
-                Rp. {price - price * 0.1}
-              </span>
-              <span className="text-sm text-slate-900 line-through">
+              <span className="text-3xl mr-2 font-bold text-slate-900">
                 Rp. {price}
               </span>
             </p>

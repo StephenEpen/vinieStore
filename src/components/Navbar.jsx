@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 const Navbar = () => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -15,11 +16,18 @@ const Navbar = () => {
       } else {
         setIsAuthenticated(false);
       }
+
+      if (user && user.uid === "jquHPh7atrQG5RxB0i40ET7rhh53") {
+        setIsAdmin(true);
+      } else {
+        setIsAdmin(false);
+      }
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
+
   const nav = useNavigate();
 
   if (loading) {
@@ -29,11 +37,10 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       await auth.signOut();
-
+      localStorage.removeItem("formData");
       toast.success("Logout successful, see you again soon!", {
         position: "top-right",
       });
-
       nav("/");
     } catch (error) {
       toast.error(error.message, {
@@ -52,16 +59,26 @@ const Navbar = () => {
         <img src="/images/vinieLogo.png" alt="Logo" className="w-28" />
       </Link>
 
-      <div className="flex items-center gap-10">
+      <div className="flex items-center gap-4 lg:gap-10 ">
+        {isAdmin && (
+          <button
+            type="button"
+            className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5"
+            onClick={() => nav("/upload")}
+          >
+            Upload
+          </button>
+        )}
+
         <Link to="/cart" className="relative">
-          <ShoppingCart className="w-5 cursor-pointer scale-125" />
+          <ShoppingCart className="w-6 cursor-pointer scale-125" />
           <p className="absolute right-[-10px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-lg text-[10px]">
             0
           </p>
         </Link>
 
         <div className="group relative">
-          <User className="w-5 cursor-pointer scale-125" />
+          <User className="w-6 cursor-pointer scale-125" />
           <div className="group-hover:block hidden absolute right-0 pt-4">
             <div className="flex flex-col gap-2 w-36 py-2 border shadow-sm text-gray-500 rounded">
               {isAuthenticated ? (
