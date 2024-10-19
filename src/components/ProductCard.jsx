@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const ProductCard = ({ id, images, name, price }) => {
   return (
     <Link to={`/product/${id}`}>
-      <div className="group my-10 flex flex-col w-[320px] overflow-hidden border border-gray-100 bg-white shadow-md rounded-lg">
+      <div className="group my-5 m-0 p-0 flex flex-col w-full max-w-lg overflow-hidden border border-gray-100 bg-white shadow-md rounded-lg">
         <div className="relative flex h-60 overflow-hidden">
           <img
             className="hover:scale-110 transition-transform duration-300 absolute top-0 right-0 h-full w-full object-cover"
@@ -12,12 +12,12 @@ const ProductCard = ({ id, images, name, price }) => {
             alt={name}
           />
         </div>
-        <div className="mt-4 px-5 pb-5">
+        <div className="flex-grow mt-4 px-5 pb-5">
           <h5 className="text-xl tracking-tight text-slate-900">{name}</h5>
           <div className="mt-2 mb-5 flex items-center justify-between">
             <p>
-              <span className="text-3xl mr-2 font-bold text-slate-900">
-                Rp. {price}
+              <span className="text-2xl lg:text-3xl mr-2 font-bold text-slate-900">
+                {price.toLocaleString("id-ID", {style: "currency", currency: "IDR"})}
               </span>
             </p>
           </div>
