@@ -6,7 +6,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
-import { auth } from "../config/firebase";
+import { auth } from "../services/firebase";
 import { toast } from "react-toastify";
 
 const SignInPage = () => {

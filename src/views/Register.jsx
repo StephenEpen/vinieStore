@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Input from "../components/Input";
 import { Link, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../config/firebase";
+import { auth } from "../services/firebase";
 import { toast } from "react-toastify";
 
 const RegisterPage = () => {

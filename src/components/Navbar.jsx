@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { User, ShoppingCart } from "react-feather";
-import { auth } from "../config/firebase";
+import { auth } from "../services/firebase";
 import { toast } from "react-toastify";
 
 const Navbar = () => {

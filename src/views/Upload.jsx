@@ -5,90 +5,54 @@ import UploadImage from "../components/UploadImage";
 import { Plus } from "react-feather";
 import Title from "../components/Title";
 import { ProductContext } from "../context/ProductContext";
+import { useDispatch, useSelector } from "react-redux";
+import { clearForm, loadFormData, updateForm } from "../redux/formSlice";
 
 const UploadPage = () => {
-  const [productName, setProductName] = useState("");
-  const [productDesc, setProductDesc] = useState("");
-  const [productPrice, setProductPrice] = useState(0);
-  const [productSizes, setProductSizes] = useState([
-    { size: "", quantity: "" },
-  ]);
-  const [productImages, setProductImages] = useState([]);
+  const dispatch = useDispatch();
+  const formData = useSelector((state) => state.form);
 
   const { addProduct } = useContext(ProductContext);
 
   useEffect(() => {
-    saveToLocalStorage();
-  }, [productName, productDesc, productPrice, productSizes, productImages]);
+    dispatch(loadFormData());
+  }, [dispatch]);
 
-  useEffect(() => {
-    const savedData = JSON.parse(localStorage.getItem("formData"));
-
-    if (savedData) {
-      const oneDay = 24 * 60 * 60 * 1000;
-      const now = Date.now();
-
-      if (now - savedData.timestamp < oneDay) {
-        setProductName(savedData.productName || "");
-        setProductDesc(savedData.productDesc || "");
-        setProductPrice(savedData.productPrice || "");
-        setProductSizes(savedData.productSizes || [{ size: "", quantity: "" }]);
-        setProductImages(savedData.productImages || []);
-      } else {
-        localStorage.removeItem("formData");
-      }
-    } 
-  }, []);
-
-  const saveToLocalStorage = () => {
-    const formData = {
-      productName,
-      productDesc,
-      productPrice: parseFloat(productPrice),
-      productSizes,
-      productImages,
-      timestamp: Date.now(),
-    };
-    localStorage.setItem("formData", JSON.stringify(formData));
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    dispatch(updateForm({ field: name, value }));
   };
 
   const handleAddSize = () => {
-    setProductSizes([...productSizes, { size: "", quantity: "" }]);
+    const updateSizes = [...formData.productSizes, { size: "", quantity: "" }];
+    dispatch(updateForm({ field: "productSizes", value: updateSizes }));
   };
 
   const handleSizeChange = (index, field, value) => {
-    const updatedSizes = productSizes.map((item, i) =>
+    const updatedSizes = formData.productSizes.map((item, i) =>
       i === index ? { ...item, [field]: value } : item
     );
-    setProductSizes(updatedSizes);
-    saveToLocalStorage();
+    dispatch(updateForm({ field: "productSizes", value: updatedSizes }));
   };
 
   const handleRemoveSize = (index) => {
-    setProductSizes(productSizes.filter((_, i) => i !== index));
-    saveToLocalStorage();
+    const updatedSizes = formData.productSizes.filter((_, i) => i !== index);
+    dispatch(updateForm({ field: "productSizes", value: updatedSizes }));
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const productData = {
-      name: productName,
-      description: productDesc,
-      price: productPrice,
-      sizes: productSizes,
+      name: formData.productName,
+      description: formData.productDesc,
+      price: formData.productPrice,
+      sizes: formData.productSizes,
     };
 
-    await addProduct(productData, productImages);
+    await addProduct(productData, formData.productImages);
 
-    localStorage.removeItem("formData");
-
-    setProductName("");
-    setProductDesc("");
-    setProductPrice("");
-    setProductSizes([{ size: "", quantity: "" }]);
-    setProductImages([]);
+    dispatch(clearForm());
   };
 
   return (
@@ -100,31 +64,31 @@ const UploadPage = () => {
       <form className="max-w-2xl mx-auto mt-2" onSubmit={handleSubmit}>
         <UploadInput
           type="text"
-          name="product_name"
-          id="product_name"
+          name="productName"
+          id="productName"
           title="Product Name"
-          value={productName}
-          onChange={(e) => setProductName(e.target.value)}
+          value={formData.productName}
+          onChange={handleInputChange}
         />
         <UploadInput
           type="text"
-          name="product_description"
-          id="product_description"
+          name="productDesc"
+          id="productDesc"
           title="Description"
-          value={productDesc}
-          onChange={(e) => setProductDesc(e.target.value)}
+          value={formData.productDesc}
+          onChange={handleInputChange}
         />
         <UploadInput
           type="number"
-          name="product_price"
-          id="product_price"
+          name="productPrice"
+          id="productPrice"
           title="Price"
-          value={productPrice}
-          onChange={(e) => setProductPrice(e.target.value)}
+          value={formData.productPrice}
+          onChange={handleInputChange}
         />
 
         <div className="mt-4">
-          {productSizes.map((item, index) => (
+          {formData.productSizes.map((item, index) => (
             <div key={index} className="grid md:grid-cols-2 md:gap-x-6">
               <UploadInput
                 type="text"
@@ -147,7 +111,7 @@ const UploadPage = () => {
                   handleSizeChange(index, "quantity", e.target.value)
                 }
               />
-              {productSizes.length > 1 && (
+              {formData.productSizes.length > 1 && (
                 <button
                   type="button"
                   onClick={() => handleRemoveSize(index)}
@@ -174,8 +138,10 @@ const UploadPage = () => {
         </div>
 
         <UploadImage
-          onFilesChange={setProductImages}
-          productImages={productImages}
+          onFilesChange={(files) =>
+            dispatch(updateForm({ field: "productImages", value: files }))
+          }
+          productImages={formData.productImages}
         />
 
         <button
