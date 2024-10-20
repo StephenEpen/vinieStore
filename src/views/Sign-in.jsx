@@ -1,17 +1,13 @@
 import React, { useState } from "react";
 import Input from "../components/Input";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  GoogleAuthProvider,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-} from "firebase/auth";
-import { auth } from "../services/firebase";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
 
 const SignInPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { signin, signWithGoogle } = useAuth();
 
   const nav = useNavigate();
 
@@ -19,34 +15,20 @@ const SignInPage = () => {
     e.preventDefault();
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-
-      const user = auth.currentUser;
-
-      if (user) {
-        toast.success("Sign In Success!", {
-          position: "top-right",
-        });
-        nav("/");
-      }
+      await signin(email, password);
+      nav("/");
     } catch (error) {
-      toast.error(error.message, {
-        position: "top-right",
-      });
+      toast.error(error.message, { position: "top-right" });
     }
   };
 
-  const googleLogin = (e) => {
-    e.preventDefault();
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider).then(async (result) => {
-      if (result.user) {
-        toast.success("Login Success!", {
-          position: "top-right",
-        });
-        nav("/");
-      }
-    });
+  const googleSignIn = async (e) => {
+    try {
+      await signWithGoogle()
+      nav("/")
+    } catch (error) {
+      toast.error(error.message, { position: 'top-right' });
+    }
   };
 
   return (
@@ -102,7 +84,7 @@ const SignInPage = () => {
             <button
               className="w-full inline-flex items-center justify-center py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-gray-900 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
               type="button"
-              onClick={googleLogin}
+              onClick={googleSignIn}
             >
               <svg
                 className="w-5 h-5 mr-2"

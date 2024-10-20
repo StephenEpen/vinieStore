@@ -3,54 +3,39 @@ import { Link, useNavigate } from "react-router-dom";
 import { User, ShoppingCart } from "react-feather";
 import { auth } from "../services/firebase";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
+import Loading from "./loading";
 
 const Navbar = () => {
+  const { currentUser, logout } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-      }
-
-      if (user && user.uid === "jquHPh7atrQG5RxB0i40ET7rhh53") {
-        setIsAdmin(true);
-      } else {
-        setIsAdmin(false);
-      }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   const nav = useNavigate();
 
+  useEffect(() => {
+    if (currentUser && currentUser.uid === "jquHPh7atrQG5RxB0i40ET7rhh53") {
+      setIsAdmin(true);
+    } else {
+      setIsAdmin(false);
+    }
+    setLoading(false);
+  }, [currentUser]);
+
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading />
   }
 
   const handleLogout = async () => {
     try {
-      await auth.signOut();
+      await logout();
       localStorage.removeItem("formData");
-      toast.success("Logout successful, see you again soon!", {
-        position: "top-right",
-      });
       nav("/");
     } catch (error) {
       toast.error(error.message, {
         position: "top-right",
       });
     }
-  };
-
-  const handleSignIn = () => {
-    nav("/sign-in");
   };
 
   return (
@@ -81,7 +66,7 @@ const Navbar = () => {
           <User className="w-6 cursor-pointer scale-125" />
           <div className="group-hover:block hidden absolute right-0 pt-4">
             <div className="flex flex-col gap-2 w-36 py-2 border shadow-sm text-gray-500 rounded">
-              {isAuthenticated ? (
+              {currentUser ? (
                 <p
                   className="cursor-pointer py-1 px-5 hover:bg-gray-200 hover:text-white"
                   onClick={handleLogout}
@@ -91,7 +76,7 @@ const Navbar = () => {
               ) : (
                 <p
                   className="cursor-pointer py-1 px-5 hover:bg-gray-200 hover:text-white"
-                  onClick={handleSignIn}
+                  onClick={() => nav("/sign-in")}
                 >
                   Sign In
                 </p>

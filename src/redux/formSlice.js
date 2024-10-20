@@ -32,7 +32,7 @@ const formSlice = createSlice({
       console.log("Saved Data from localStorage: ", savedData);
 
       if (savedData) {
-        const oneDay = 24 * 60 * 60 * 1000;
+        const oneDay = 120 * 60 * 1000;
         const now = Date.now();
 
         if (now - savedData.timestamp < oneDay) {

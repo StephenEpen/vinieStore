@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import Input from "../components/Input";
 import { Link, useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../services/firebase";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
 
 const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const { register, signWithGoogle } = useAuth();
 
   const nav = useNavigate();
 
@@ -21,20 +21,18 @@ const RegisterPage = () => {
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-
-      const user = auth.currentUser;
-
-      if (user) {
-        toast.success("Register Success!", {
-          position: "top-right",
-        });
-        nav("/");
-      }
+      await register(email, password);
     } catch (error) {
-      toast.error(error.message, {
-        position: "top-right",
-      });
+      toast.error(error.message, { position: "top-right" });
+    }
+  };
+
+  const googleSignUp = async (e) => {
+    try {
+      await signWithGoogle();
+      nav("/");
+    } catch (error) {
+      toast.error(error.message, { position: "top-right" });
     }
   };
 
@@ -101,7 +99,8 @@ const RegisterPage = () => {
           <form id="connect-google-button" method="post" action="">
             <button
               className="w-full inline-flex items-center justify-center py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-gray-900 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-              type="submit"
+              type="button"
+              onClick={googleSignUp}
             >
               <svg
                 className="w-5 h-5 mr-2"
