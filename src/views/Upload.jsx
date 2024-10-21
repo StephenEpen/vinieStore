@@ -44,8 +44,11 @@ const UploadPage = () => {
     dispatch(updateForm({ field: "productSizes", value: updatedSizes }));
   };
 
+  
   const handlePriceFocus = () => {
-    dispatch(updateForm({ field: "productPrice", value: "" }));
+    if (formData.productPrice === "" || formData.productPrice === 0) {
+      dispatch(updateForm({ field: "productPrice", value: "" }));
+    }
   };
 
   const handlePriceBlur = () => {
@@ -56,7 +59,9 @@ const UploadPage = () => {
 
   const handleQuantityFocus = (index) => {
     const updatedSizes = formData.productSizes.map((item, i) =>
-      i === index ? { ...item, quantity: "" } : item
+      i === index && (item.quantity === "" || item.quantity === 0)
+        ? { ...item, quantity: "" }
+        : item
     );
     dispatch(updateForm({ field: "productSizes", value: updatedSizes }));
   };
