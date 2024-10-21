@@ -7,16 +7,18 @@ const ProductCard = ({ id, images, name, price }) => {
       <div className="group my-5 m-0 p-0 flex flex-col w-full max-w-lg overflow-hidden border border-gray-100 bg-white shadow-md rounded-lg">
         <div className="relative flex h-60 overflow-hidden">
           <img
-            className="hover:scale-110 transition-transform duration-300 absolute top-0 right-0 h-full w-full object-cover"
+            className="hover:scale-110 transition-transform duration-300 absolute top-0 right-0 h-full w-full object-contain"
             src={images[0]}
             alt={name}
           />
         </div>
         <div className="flex-grow mt-4 px-5 pb-5">
-          <h5 className="text-xl tracking-tight text-slate-900">{name}</h5>
+          <h5 className="text-xl tracking-tight text-slate-900">
+            {name.lenght>25 ? `${name.substring(0, 25)}...` : name}
+          </h5>
           <div className="mt-2 mb-5 flex items-center justify-between">
             <p>
-              <span className="text-2xl lg:text-3xl mr-2 font-bold text-slate-900">
+              <span className="text-xl lg:text-2xl mr-2 font-bold text-slate-900">
                 {price.toLocaleString("id-ID", {style: "currency", currency: "IDR"})}
               </span>
             </p>

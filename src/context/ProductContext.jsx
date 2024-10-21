@@ -74,6 +74,7 @@ const ProductContextProvider = (props) => {
 
       const docRef = await addDoc(collection(db, "product"), {
         ...productData,
+        price: parseFloat(productData.price),
         images: imagePaths
       });
       console.log("Product added with ID:", docRef.id);

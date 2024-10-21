@@ -6,6 +6,12 @@ import ProductCard from "./ProductCard";
 const ProductCollection = () => {
   const { products } = useContext(ProductContext);
 
+  const [productList, setProductList] = useState(products);
+
+  useEffect(()=>{
+    setProductList(products);
+  }, [products])
+
   return (
     <div className="min-h-screen overflow-auto">
       <div className="my-10">
@@ -23,7 +29,7 @@ const ProductCollection = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
-          {products.map((item) => (
+          {productList.map((item) => (
             <div  key={item.id}>
               <ProductCard
                 id={item.id}
