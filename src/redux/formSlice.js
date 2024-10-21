@@ -18,8 +18,6 @@ const saveToLocalStorage = (state) => {
     timestamp: Date.now(),
   };
 
-  console.log("Data yang akan disimpan ke localStorage:", formData);
-
   localStorage.setItem("formData", JSON.stringify(formData));
 };
 
@@ -29,7 +27,6 @@ const formSlice = createSlice({
   reducers: {
     loadFormData: (state, action) => {
       const savedData = JSON.parse(localStorage.getItem("formData"));
-      console.log("Saved Data from localStorage: ", savedData);
 
       if (savedData) {
         const oneDay = 120 * 60 * 1000;
