@@ -7,12 +7,16 @@ import Title from "../components/Title";
 import { ProductContext } from "../context/ProductContext";
 import { useDispatch, useSelector } from "react-redux";
 import { clearForm, loadFormData, updateForm } from "../redux/formSlice";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const UploadPage = () => {
   const dispatch = useDispatch();
   const formData = useSelector((state) => state.form);
 
   const { addProduct } = useContext(ProductContext);
+
+  const nav = useNavigate();
 
   useEffect(() => {
     dispatch(loadFormData());
@@ -40,6 +44,32 @@ const UploadPage = () => {
     dispatch(updateForm({ field: "productSizes", value: updatedSizes }));
   };
 
+  const handlePriceFocus = () => {
+    dispatch(updateForm({ field: "productPrice", value: "" }));
+  };
+
+  const handlePriceBlur = () => {
+    if (!formData.productPrice) {
+      dispatch(updateForm({ field: "productPrice", value: "" }));
+    }
+  };
+
+  const handleQuantityFocus = (index) => {
+    const updatedSizes = formData.productSizes.map((item, i) =>
+      i === index ? { ...item, quantity: "" } : item
+    );
+    dispatch(updateForm({ field: "productSizes", value: updatedSizes }));
+  };
+
+  const handleQuantityBlur = (index) => {
+    if (!formData.productSizes[index].quantity) {
+      const updatedSizes = formData.productSizes.map((item, i) =>
+        i === index ? { ...item, quantity: "" } : item
+      );
+      dispatch(updateForm({ field: "productSizes", value: updatedSizes }));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -52,11 +82,16 @@ const UploadPage = () => {
 
     await addProduct(productData, formData.productImages);
 
+    nav("/");
+    toast.success("Product Uploaded!", {
+      position: "top-right",
+    });
+
     dispatch(clearForm());
   };
 
   return (
-    <div>
+    <div className="pt-10 pb-20">
       <Navbar />
 
       <Title text1="Upload" text2="Product" />
@@ -71,7 +106,7 @@ const UploadPage = () => {
           onChange={handleInputChange}
         />
         <UploadInput
-          type="text"
+          type="textarea"
           name="productDesc"
           id="productDesc"
           title="Description"
@@ -83,8 +118,11 @@ const UploadPage = () => {
           name="productPrice"
           id="productPrice"
           title="Price"
+          min={0}
           value={formData.productPrice}
           onChange={handleInputChange}
+          onFocus={handlePriceFocus}
+          onBlur={handlePriceBlur}
         />
 
         <div className="mt-4">
@@ -110,6 +148,8 @@ const UploadPage = () => {
                 onChange={(e) =>
                   handleSizeChange(index, "quantity", e.target.value)
                 }
+                onFocus={() => handleQuantityFocus(index)}
+                onBlur={() => handleQuantityBlur(index)}
               />
               {formData.productSizes.length > 1 && (
                 <button
