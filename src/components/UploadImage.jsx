@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
 
-const UploadImage = ({onFilesChange, productImages}) => {
+const UploadImage = ({ onFilesChange, productImages }) => {
   const [files, setFiles] = useState([]);
 
-  useEffect(()=>{
-    setFiles(productImages)
-  }, [productImages])
+  useEffect(() => {
+    setFiles(productImages);
+  }, [productImages]);
 
   const handleFilesChange = (newFiles) => {
     const selectedFiles = Array.from(newFiles);
-    const updatedFiles = [...files, ...selectedFiles].filter((file, index, self) => 
-      index === self.findIndex((f) => f.name === file.name));
+    const updatedFiles = [...files, ...selectedFiles].filter(
+      (file, index, self) =>
+        index === self.findIndex((f) => f.name === file.name)
+    );
     setFiles(updatedFiles);
     onFilesChange(updatedFiles);
   };
@@ -41,7 +43,9 @@ const UploadImage = ({onFilesChange, productImages}) => {
       onDrop={handleDrop}
     >
       <div className="border-dashed border-2 border-gray-400 py-12 flex flex-col justify-center items-center">
-        <p className="mb-3 font-semibold text-gray-700 text-sm lg:text-base">Drag and drop your files anywhere or</p>
+        <p className="mb-3 font-semibold text-gray-700 text-sm lg:text-base">
+          Drag and drop your files anywhere or
+        </p>
         <input
           type="file"
           id="hidden-input"
@@ -63,9 +67,16 @@ const UploadImage = ({onFilesChange, productImages}) => {
         <ul className="flex flex-wrap mt-4 gap-4">
           {files.length > 0 ? (
             files.map((file, index) => (
-              <li key={index} className="relative w-24 h-24 border bg-gray-100 rounded-md flex items-center justify-center">
+              <li
+                key={index}
+                className="relative w-24 h-24 border bg-gray-100 rounded-md flex items-center justify-center"
+              >
                 {file.type.startsWith("image/") ? (
-                  <img src={URL.createObjectURL(file)} alt="preview" className="w-full h-full object-cover rounded-md" />
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt="preview"
+                    className="w-full h-full object-cover rounded-md"
+                  />
                 ) : (
                   <span className="text-sm text-gray-700">{file.name}</span>
                 )}

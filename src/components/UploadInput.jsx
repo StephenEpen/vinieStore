@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useRef } from "react";
 
 const UploadInput = ({
@@ -14,11 +14,17 @@ const UploadInput = ({
 }) => {
   const textareaRef = useRef(null);
 
-  const handleTextareaInput = (e) => {
+  const handleTextareaInput = () => {
     const textarea = textareaRef.current;
     textarea.style.height = "auto"; 
     textarea.style.height = `${textarea.scrollHeight}px`;
   };
+
+  useEffect(() => {
+    if (type === "textarea" && textareaRef.current) {
+      handleTextareaInput();
+    }
+  }, [value]);
 
   return (
     <div className="relative z-0 w-full mb-5 group">
