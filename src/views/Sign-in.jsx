@@ -15,8 +15,10 @@ const SignInPage = () => {
     e.preventDefault();
 
     try {
-      await signin(email, password);
-      nav("/");
+      const signIn = await signin(email, password);
+      if(signIn){
+        nav("/");
+      }
     } catch (error) {
       toast.error(error.message, { position: "top-right" });
     }
