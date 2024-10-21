@@ -14,7 +14,7 @@ const ProductCard = ({ id, images, name, price }) => {
         </div>
         <div className="flex-grow mt-4 px-5 pb-5">
           <h5 className="text-xl tracking-tight text-slate-900">
-            {name.lenght>25 ? `${name.substring(0, 25)}...` : name}
+            {name.length>25 ? `${name.substring(0, 25)}...` : name}
           </h5>
           <div className="mt-2 mb-5 flex items-center justify-between">
             <p>
