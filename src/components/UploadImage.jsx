@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 
-const UploadImage = ({ onFilesChange, productImages }) => {
-  const [files, setFiles] = useState([]);
+const UploadImage = ({ colorIndex, onFilesChange, productImages }) => {
+  const [files, setFiles] = useState(productImages || []);
 
   useEffect(() => {
-    setFiles(productImages);
-  }, [productImages]);
+    onFilesChange(files);
+  }, [files]);
 
   const handleFilesChange = (newFiles) => {
     const selectedFiles = Array.from(newFiles);
@@ -14,7 +14,7 @@ const UploadImage = ({ onFilesChange, productImages }) => {
         index === self.findIndex((f) => f.name === file.name)
     );
     setFiles(updatedFiles);
-    onFilesChange(updatedFiles);
+    onFilesChange(updatedFiles); 
   };
 
   const removeFile = (fileToRemove) => {
@@ -23,39 +23,22 @@ const UploadImage = ({ onFilesChange, productImages }) => {
     onFilesChange(updatedFiles);
   };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.dataTransfer.files) {
-      handleFilesChange(e.dataTransfer.files);
-    }
-  };
-
   return (
-    <div
-      className="p-6 border rounded-lg my-6"
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
-    >
+    <div className="p-6 border rounded-lg my-6">
       <div className="border-dashed border-2 border-gray-400 py-12 flex flex-col justify-center items-center">
-        <p className="mb-3 font-semibold text-gray-700 text-sm lg:text-base">
-          Drag and drop your files anywhere or
-        </p>
         <input
           type="file"
-          id="hidden-input"
+          id={`hidden-input-${colorIndex}`}
           multiple
           className="hidden"
           onChange={(e) => handleFilesChange(e.target.files)}
+          accept="image/*"
         />
         <button
           type="button"
-          onClick={() => document.getElementById("hidden-input").click()}
+          onClick={() =>
+            document.getElementById(`hidden-input-${colorIndex}`).click()
+          }
           className="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5"
         >
           Upload a file
@@ -71,15 +54,11 @@ const UploadImage = ({ onFilesChange, productImages }) => {
                 key={index}
                 className="relative w-24 h-24 border bg-gray-100 rounded-md flex items-center justify-center"
               >
-                {file.type.startsWith("image/") ? (
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt="preview"
-                    className="w-full h-full object-cover rounded-md"
-                  />
-                ) : (
-                  <span className="text-sm text-gray-700">{file.name}</span>
-                )}
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt="preview"
+                  className="w-full h-full object-cover rounded-md"
+                />
                 <button
                   type="button"
                   onClick={() => removeFile(file)}

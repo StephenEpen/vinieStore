@@ -1,97 +1,139 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import Navbar from "../components/Navbar";
 import UploadInput from "../components/UploadInput";
 import UploadImage from "../components/UploadImage";
-import { Plus } from "react-feather";
+import { Plus, Trash2 } from "react-feather";
 import Title from "../components/Title";
 import { ProductContext } from "../context/ProductContext";
-import { useDispatch, useSelector } from "react-redux";
-import { clearForm, loadFormData, updateForm } from "../redux/formSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const UploadPage = () => {
-  const dispatch = useDispatch();
-  const formData = useSelector((state) => state.form);
-
   const { addProduct } = useContext(ProductContext);
+  const [formData, setFormData] = useState({
+    productName: "",
+    productDesc: "",
+    productPrice: "",
+    productColors: [
+      { color: "", sizes: [{ size: "", quantity: "" }], images: [] },
+    ],
+  });
 
   const nav = useNavigate();
 
-  useEffect(() => {
-    dispatch(loadFormData());
-  }, [dispatch]);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    dispatch(updateForm({ field: name, value }));
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
-  const handleAddSize = () => {
-    const updateSizes = [...formData.productSizes, { size: "", quantity: "" }];
-    dispatch(updateForm({ field: "productSizes", value: updateSizes }));
+  const handleAddColor = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      productColors: [
+        ...prevData.productColors,
+        { color: "", sizes: [{ size: "", quantity: "" }], images: [] },
+      ],
+    }));
   };
 
-  const handleSizeChange = (index, field, value) => {
-    const updatedSizes = formData.productSizes.map((item, i) =>
-      i === index ? { ...item, [field]: value } : item
+  const handleColorChange = (colorIndex, value) => {
+    const updatedColors = formData.productColors.map((color, index) =>
+      index === colorIndex ? { ...color, color: value } : color
     );
-    dispatch(updateForm({ field: "productSizes", value: updatedSizes }));
+    setFormData((prevData) => ({
+      ...prevData,
+      productColors: updatedColors,
+    }));
   };
 
-  const handleRemoveSize = (index) => {
-    const updatedSizes = formData.productSizes.filter((_, i) => i !== index);
-    dispatch(updateForm({ field: "productSizes", value: updatedSizes }));
-  };
-
-  const handlePriceFocus = () => {
-    if (formData.productPrice === "" || formData.productPrice === 0) {
-      dispatch(updateForm({ field: "productPrice", value: "" }));
-    }
-  };
-
-  const handlePriceBlur = () => {
-    if (!formData.productPrice) {
-      dispatch(updateForm({ field: "productPrice", value: "" }));
-    }
-  };
-
-  const handleQuantityFocus = (index) => {
-    const updatedSizes = formData.productSizes.map((item, i) =>
-      i === index && (item.quantity === "" || item.quantity === 0)
-        ? { ...item, quantity: "" }
-        : item
+  const handleAddSize = (colorIndex) => {
+    const updatedColors = formData.productColors.map((color, index) =>
+      index === colorIndex
+        ? { ...color, sizes: [...color.sizes, { size: "", quantity: "" }] }
+        : color
     );
-    dispatch(updateForm({ field: "productSizes", value: updatedSizes }));
+    setFormData((prevData) => ({
+      ...prevData,
+      productColors: updatedColors,
+    }));
   };
 
-  const handleQuantityBlur = (index) => {
-    if (!formData.productSizes[index].quantity) {
-      const updatedSizes = formData.productSizes.map((item, i) =>
-        i === index ? { ...item, quantity: "" } : item
+  const handleRemoveSize = (colorIndex, sizeIndex) => {
+    const updatedSizes = formData.productColors[colorIndex].sizes.filter(
+      (_, index) => index !== sizeIndex
+    );
+    const updatedColors = formData.productColors.map((color, index) =>
+      index === colorIndex ? { ...color, sizes: updatedSizes } : color
+    );
+    setFormData((prevData) => ({
+      ...prevData,
+      productColors: updatedColors,
+    }));
+  };
+
+  const handleSizeChange = (colorIndex, sizeIndex, field, value) => {
+    const updatedSizes = formData.productColors[colorIndex].sizes.map(
+      (size, index) =>
+        index === sizeIndex ? { ...size, [field]: value } : size
+    );
+    const updatedColors = formData.productColors.map((color, index) =>
+      index === colorIndex ? { ...color, sizes: updatedSizes } : color
+    );
+    setFormData((prevData) => ({
+      ...prevData,
+      productColors: updatedColors,
+    }));
+  };
+
+  const handleFilesChange = (colorIndex, files) => {
+    setFormData((prevData) => {
+      const updatedColors = prevData.productColors.map((color, index) =>
+        index === colorIndex ? { ...color, images: files } : color
       );
-      dispatch(updateForm({ field: "productSizes", value: updatedSizes }));
-    }
+      return { ...prevData, productColors: updatedColors };
+    });
+  };
+
+  const handleRemoveColor = (colorIndex) => {
+    const updatedColors = formData.productColors.filter(
+      (_, index) => index !== colorIndex
+    );
+    setFormData((prevData) => ({
+      ...prevData,
+      productColors: updatedColors,
+    }));
+  };
+
+  const resetFormData = () => {
+    setFormData({
+      productName: "",
+      productDesc: "",
+      productPrice: "",
+      productColors: [
+        { color: "", sizes: [{ size: "", quantity: "" }], images: [] },
+      ],
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const productData = {
-      name: formData.productName,
-      description: formData.productDesc,
-      price: formData.productPrice,
-      sizes: formData.productSizes,
-    };
+    try {
+      const upload = await addProduct(formData);
 
-    await addProduct(productData, formData.productImages);
-
-    nav("/");
-    toast.success("Product Uploaded!", {
-      position: "top-right",
-    });
-
-    dispatch(clearForm());
+      if (upload) {
+        toast.success("Product Uploaded Successfully!", {
+          position: "top-right",
+        });
+        resetFormData;
+        nav("/");
+      }
+    } catch (error) {
+      toast.error(error.message, { position: "top-right" });
+    }
   };
 
   return (
@@ -125,72 +167,108 @@ const UploadPage = () => {
             min={0}
             value={formData.productPrice}
             onChange={handleInputChange}
-            onFocus={handlePriceFocus}
-            onBlur={handlePriceBlur}
           />
 
-          <div className="mt-4">
-            {formData.productSizes.map((item, index) => (
-              <div key={index} className="grid md:grid-cols-2 md:gap-x-6">
-                <UploadInput
-                  type="text"
-                  name={`product_size_${index}`}
-                  id={`product_size_${index}`}
-                  title={`Size ${index + 1}`}
-                  value={item.size}
-                  onChange={(e) =>
-                    handleSizeChange(index, "size", e.target.value)
-                  }
-                />
-                <UploadInput
-                  type="number"
-                  name={`product_quantity_${index}`}
-                  id={`product_quantity_${index}`}
-                  title="Quantity"
-                  min="0"
-                  value={item.quantity}
-                  onChange={(e) =>
-                    handleSizeChange(index, "quantity", e.target.value)
-                  }
-                  onFocus={() => handleQuantityFocus(index)}
-                  onBlur={() => handleQuantityBlur(index)}
-                />
-                {formData.productSizes.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveSize(index)}
-                    className="text-red-600 text-sm md:col-span-2 mb-5"
-                  >
-                    Remove Size
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
+          {formData.productColors.map((colorData, colorIndex) => (
+            <div key={colorIndex} className="mt-6 border p-4 rounded-md">
+              <UploadInput
+                type="text"
+                name={`color_${colorIndex}`}
+                id={`color_${colorIndex}`}
+                title={`Color ${colorIndex + 1}`}
+                value={colorData.color}
+                onChange={(e) => handleColorChange(colorIndex, e.target.value)}
+              />
 
-          <div className="flex items-center justify-center mt-2">
+              {colorData.sizes.map((sizeData, sizeIndex) => (
+                <div key={sizeIndex} className="flex items-center">
+                  <div className="grid md:grid-cols-2 md:gap-x-6 flex-grow">
+                    <UploadInput
+                      type="number"
+                      name={`size_${colorIndex}_${sizeIndex}`}
+                      id={`size_${colorIndex}_${sizeIndex}`}
+                      title={`Size ${sizeIndex + 1}`}
+                      value={sizeData.size}
+                      onChange={(e) =>
+                        handleSizeChange(
+                          colorIndex,
+                          sizeIndex,
+                          "size",
+                          e.target.value
+                        )
+                      }
+                    />
+
+                    <UploadInput
+                      type="number"
+                      name={`quantity_${colorIndex}_${sizeIndex}`}
+                      id={`quantity_${colorIndex}_${sizeIndex}`}
+                      title="Quantity"
+                      min="0"
+                      value={sizeData.quantity}
+                      onChange={(e) =>
+                        handleSizeChange(
+                          colorIndex,
+                          sizeIndex,
+                          "quantity",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </div>
+
+                  <div className="justify-end ml-4">
+                    <Trash2
+                      onClick={() => handleRemoveSize(colorIndex, sizeIndex)}
+                      color="#374151"
+                    />
+                  </div>
+                </div>
+              ))}
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => handleAddSize(colorIndex)}
+                  className="text-blue-600 text-sm mt-2"
+                >
+                  Add Size
+                </button>
+              </div>
+
+              <UploadImage
+                key={colorIndex}
+                colorIndex={colorIndex}
+                onFilesChange={(files) => handleFilesChange(colorIndex, files)}
+                productImages={colorData.images}
+              />
+
+              <div className="flex justify-end pt-5">
+                <button
+                  type="button"
+                  onClick={() => handleRemoveColor(colorIndex)}
+                  className="text-red-600 text-sm"
+                >
+                  Remove Color
+                </button>
+              </div>
+            </div>
+          ))}
+          <div className="flex items-center justify-center mt-4">
             <hr className="flex-grow h-px bg-gray-300 border-0 dark:bg-gray-700" />
             <button
               type="button"
-              onClick={handleAddSize}
-              className="flex items-center justify-center gap-x-2 mx-3 text-gray-900 font-medium bg-white rounded-lg px-3 py-1 hover:bg-gray-100 focus:outline-none"
+              onClick={handleAddColor}
+              className="flex items-center justify-center gap-x-2 mx-3 text-gray-800 font-medium bg-white rounded-lg px-3 py-1 hover:bg-gray-100 focus:outline-none"
             >
               <Plus size="18" />
-              <span>Add Size</span>
+              <span>Add Color</span>
             </button>
             <hr className="flex-grow h-px bg-gray-300 border-0 dark:bg-gray-700" />
           </div>
 
-          <UploadImage
-            onFilesChange={(files) =>
-              dispatch(updateForm({ field: "productImages", value: files }))
-            }
-            productImages={formData.productImages}
-          />
-
           <button
             type="submit"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 mt-4"
+            className="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 mt-10"
           >
             Submit
           </button>
