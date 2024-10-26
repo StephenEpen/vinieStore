@@ -11,7 +11,7 @@ import {
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth, rtDB } from "../services/firebase";
 import { toast } from "react-toastify";
-import { onDisconnect, OnDisconnect, ref, set } from "firebase/database";
+import { onDisconnect, ref, set } from "firebase/database";
 import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
@@ -24,9 +24,11 @@ const AuthContextProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const adminUID = "jquHPh7atrQG5RxB0i40ET7rhh53";
+
   const nav = useNavigate();
 
-  const INACTIVITY_TIME_LIMIT = 30 * 60 * 1000;
+  const INACTIVITY_TIME_LIMIT = 120 * 60 * 1000;
 
   useEffect(() => {
     setPersistence(auth, browserSessionPersistence).then(() => {
@@ -136,7 +138,11 @@ const AuthContextProvider = ({ children }) => {
       }
       await signOut(auth);
       setCurrentUser(null);
-      localStorage.clear();
+      localStorage.removeItem("formData");
+
+      Object.keys(localStorage)
+        .filter((key) => key.startsWith("productColorImages_"))
+        .forEach((key) => localStorage.removeItem(key));
 
       toast.success("Logout successful, see you again soon!", {
         position: "top-right",
@@ -164,12 +170,17 @@ const AuthContextProvider = ({ children }) => {
     onDisconnect(userStatusRef).set(offlineStatus);
   };
 
+  const verifAdminUID = () => {
+    return currentUser && adminUID.includes(currentUser.uid);
+  };
+
   const value = {
     currentUser,
     register,
     signin,
     signWithGoogle,
     logout,
+    verifAdminUID
   };
 
   return (

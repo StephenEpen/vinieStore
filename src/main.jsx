@@ -9,45 +9,49 @@ import ErrorPage from "./views/404.jsx";
 import ProductPage from "./views/Product.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import ProtectedRoute from "./components/route/ProtectedRoute.jsx";
 import ProductContextProvider from "./context/ProductContext.jsx";
 import UploadPage from "./views/Upload.jsx";
-import { Provider } from "react-redux";
-import store from "./redux/store.js";
 import AuthContextProvider from "./context/AuthContext.jsx";
+import UploadProtectedRoute from "./components/route/UploadProtectedRoute.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-    <Provider store={store}>
-      <AuthContextProvider>
-        <ProductContextProvider>
-          <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route
-                path="/sign-in"
-                element={
-                  <ProtectedRoute>
-                    <SignInPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/register"
-                element={
-                  <ProtectedRoute>
-                    <RegisterPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/product/:productId" element={<ProductPage />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/upload" element={<UploadPage />} />
-            </Routes>
-            <ToastContainer />
-          </div>
-        </ProductContextProvider>
-      </AuthContextProvider>
-    </Provider>
+    <AuthContextProvider>
+      <ProductContextProvider>
+        <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route
+              path="/sign-in"
+              element={
+                <ProtectedRoute>
+                  <SignInPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <ProtectedRoute>
+                  <RegisterPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/product/:productId" element={<ProductPage />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route
+              path="/upload"
+              element={
+                <UploadProtectedRoute>
+                  <UploadPage />
+                </UploadProtectedRoute>
+              }
+            />
+          </Routes>
+          <ToastContainer />
+        </div>
+      </ProductContextProvider>
+    </AuthContextProvider>
   </BrowserRouter>
 );

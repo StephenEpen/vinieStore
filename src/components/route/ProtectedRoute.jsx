@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { auth } from "../services/firebase"; // Adjust the import based on your file structure
+import { auth } from "../../services/firebase"; // Adjust the import based on your file structure
 
 const ProtectedRoute = ({ children }) => {
   const [loading, setLoading] = useState(true);
