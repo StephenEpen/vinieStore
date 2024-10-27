@@ -12,10 +12,6 @@ const ProductCollection = () => {
     setProductList(products);
   }, [products]);
 
-  useEffect(() => {
-    console.log("Product List:", productList);
-  }, [productList]);
-
   return (
     <div className="min-h-screen overflow-auto">
       <div className="my-10">
