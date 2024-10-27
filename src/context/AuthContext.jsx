@@ -24,7 +24,7 @@ const AuthContextProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const adminUID = "jquHPh7atrQG5RxB0i40ET7rhh53";
+  const adminUID = import.meta.env.VITE_ADMIN_UID
 
   const nav = useNavigate();
 
