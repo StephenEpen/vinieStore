@@ -8,9 +8,13 @@ const ProductCollection = () => {
 
   const [productList, setProductList] = useState(products);
 
-  useEffect(()=>{
+  useEffect(() => {
     setProductList(products);
-  }, [products])
+  }, [products]);
+
+  useEffect(() => {
+    console.log("Product List:", productList);
+  }, [productList]);
 
   return (
     <div className="min-h-screen overflow-auto">
@@ -28,14 +32,15 @@ const ProductCollection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 gap-y-6">
           {productList.map((item) => (
-            <div  key={item.id}>
+            <div key={item.id}>
               <ProductCard
-                id={item.id}
-                images={item.images}
+                id = {item.id}
+                images={item.colors[0].images} 
                 name={item.name}
                 price={item.price}
+                colors={item.colors}
               />
             </div>
           ))}
