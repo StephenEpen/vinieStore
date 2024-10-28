@@ -42,7 +42,7 @@
                     })
                   );
                   return {
-                    ...product,
+                    ...color,
                     images: imageUrls.filter((url) => url !== null),
                   };
                 })
