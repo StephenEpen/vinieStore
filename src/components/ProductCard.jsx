@@ -8,23 +8,29 @@ const ProductCard = ({ id, images, name, price, colors }) => {
   const [visibleThumbnails, setVisibleThumbnails] = useState(0);
   const thumbnailContainerRef = useRef(null);
 
-  const thumbnailWidth = 56; 
+  const thumbnailWidth = 56 + 4;
 
   useEffect(() => {
     const handleResize = () => {
       if (thumbnailContainerRef.current) {
         const containerWidth = thumbnailContainerRef.current.offsetWidth;
-        const newVisibleThumbnails = Math.floor(containerWidth / thumbnailWidth);
+        const newVisibleThumbnails = Math.floor(
+          containerWidth / thumbnailWidth
+        );
 
         setVisibleThumbnails(newVisibleThumbnails);
+
         setScrollPosition((prevScroll) =>
-          Math.min(prevScroll, colors.length - newVisibleThumbnails)
+          Math.min(
+            prevScroll,
+            Math.max(colors.length - newVisibleThumbnails, 0)
+          )
         );
       }
     };
 
-    handleResize(); 
-    window.addEventListener("resize", handleResize); 
+    handleResize();
+    window.addEventListener("resize", handleResize);
 
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -38,7 +44,7 @@ const ProductCard = ({ id, images, name, price, colors }) => {
   const handleNextImage = () => {
     const maxScrollPosition = colors.length - visibleThumbnails;
     if (scrollPosition < maxScrollPosition) {
-      setScrollPosition(scrollPosition + 1);
+      setScrollPosition(Math.min(scrollPosition + 1, maxScrollPosition));
     }
   };
 
@@ -52,8 +58,7 @@ const ProductCard = ({ id, images, name, price, colors }) => {
     <div className="group my-5 m-0 p-0 flex flex-col w-full max-w-lg overflow-hidden border border-gray-100 bg-white shadow-md rounded-lg">
       <Link
         to={`/product/${id}`}
-        className="relative flex flex-col"
-        style={{ pointerEvents: "auto" }}
+        className="pointerEvents relative flex flex-col"
       >
         <div className="relative flex h-60 overflow-hidden">
           <img
@@ -64,14 +69,13 @@ const ProductCard = ({ id, images, name, price, colors }) => {
         </div>
       </Link>
 
-      <div className="relative flex mt-2 items-center justify-between px-5">
-        {colors.length > visibleThumbnails && scrollPosition > 0 && (
+      <div className="relative flex mt-2 items-center justify-between px-2">
+        {scrollPosition > 0 && (
           <button
-            className="absolute left-0 p-2 z-10"
+            className="pointerEvents absolute left-0 p-2 z-10"
             onClick={handlePrevImage}
-            style={{ pointerEvents: "auto" }}
           >
-            <ChevronLeft size={24} />
+            <ChevronLeft size={24} strokeWidth="3"/>
           </button>
         )}
 
@@ -89,12 +93,11 @@ const ProductCard = ({ id, images, name, price, colors }) => {
               <button
                 key={index}
                 onMouseEnter={() => handleImageHover(color.images[0])}
-                className={`w-14 h-14 border rounded ${
+                className={`pointerEvents w-14 h-14 rounded ${
                   selectedImage === color.images[0]
-                    ? "border-black"
-                    : "border-gray-300"
+                    ? "border-2 border-gray-700"
+                    : ""
                 }`}
-                style={{ pointerEvents: "auto" }}
               >
                 <img
                   src={color.images[0]}
@@ -106,23 +109,18 @@ const ProductCard = ({ id, images, name, price, colors }) => {
           </div>
         </div>
 
-        {colors.length > visibleThumbnails &&
-          scrollPosition < colors.length - visibleThumbnails && (
-            <button
-              className="absolute right-0 p-2 z-10"
-              onClick={handleNextImage}
-              style={{ pointerEvents: "auto" }}
-            >
-              <ChevronRight size={24} />
-            </button>
-          )}
+        {scrollPosition < Math.max(colors.length - visibleThumbnails, 0) && (
+          <button
+            className="pointerEvents absolute right-0 p-2 z-10"
+            onClick={handleNextImage}
+          >
+            <ChevronRight size={24} strokeWidth="3"/>
+          </button>
+        )}
       </div>
 
       <div className="flex-grow mt-4 px-5 pb-5">
-        <Link
-          to={`/product/${id}`}
-          style={{ textDecoration: "none", pointerEvents: "auto" }}
-        >
+        <Link to={`/product/${id}`} className="pointerEvents nonTextDecor">
           <h5 className="text-xl tracking-tight text-slate-900">
             {name.length > 25 ? `${name.substring(0, 25)}...` : name}
           </h5>
@@ -138,11 +136,8 @@ const ProductCard = ({ id, images, name, price, colors }) => {
           </p>
         </div>
 
-        <button
-          className="flex items-center justify-center bg-gray-900 px-5 py-2.5 text-sm text-white transition hover:bg-gray-700 rounded-md"
-          style={{ pointerEvents: "auto" }}
-        >
-          <svg
+        <button className="pointerEvents flex items-center justify-center bg-gray-900 px-5 py-2.5 text-sm text-white transition hover:bg-gray-700 rounded-md">
+          <svg  
             xmlns="http://www.w3.org/2000/svg"
             className="mr-2 h-6 w-6"
             fill="none"

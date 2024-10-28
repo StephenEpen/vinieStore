@@ -157,3 +157,11 @@ i {
 #productPrice {
     -moz-appearance: textfield;
 }
+
+.pointerEvents{
+  pointer-events: auto;
+}
+
+.nonTextDecor{
+  text-decoration: none;
+}
