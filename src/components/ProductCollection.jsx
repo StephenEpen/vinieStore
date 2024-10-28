@@ -10,16 +10,17 @@ const ProductCollection = () => {
 
   useEffect(() => {
     setProductList(products);
+    console.log(products)
   }, [products]);
 
   return (
     <div className="min-h-screen overflow-auto">
-      <div className="my-10">
+      <div className="my-2">
         <div className="text-center py-8 text-4xl lg:text-5xl">
           <div className="inline-flex gap-2 items-center mb-3">
             <p className="text-gray-500">
               Product
-              <span className="text-gray-700 font-medium">Collection</span>
+              <span className="text-gray-700 font-medium ml-2">Collection</span>
             </p>
           </div>
           <p className="lg:w-3/4 m-auto text-sm lg:text-lg text-gray-600">
