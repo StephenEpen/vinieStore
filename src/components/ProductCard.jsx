@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "react-feather";
 
-const ProductCard = ({ id, images, name, price, colors }) => {
+const ProductCard = ({ id, images, name, price, colors, random }) => {
   const [selectedImage, setSelectedImage] = useState(images[0]);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [visibleThumbnails, setVisibleThumbnails] = useState(0);
@@ -75,7 +75,7 @@ const ProductCard = ({ id, images, name, price, colors }) => {
             className="pointerEvents absolute left-0 p-2 z-10"
             onClick={handlePrevImage}
           >
-            <ChevronLeft size={24} strokeWidth="3"/>
+            <ChevronLeft size={24} strokeWidth="3" />
           </button>
         )}
 
@@ -114,7 +114,7 @@ const ProductCard = ({ id, images, name, price, colors }) => {
             className="pointerEvents absolute right-0 p-2 z-10"
             onClick={handleNextImage}
           >
-            <ChevronRight size={24} strokeWidth="3"/>
+            <ChevronRight size={24} strokeWidth="3" />
           </button>
         )}
       </div>
@@ -136,23 +136,27 @@ const ProductCard = ({ id, images, name, price, colors }) => {
           </p>
         </div>
 
-        <button className="pointerEvents flex items-center justify-center bg-gray-900 px-5 py-2.5 text-sm text-white transition hover:bg-gray-700 rounded-md">
-          <svg  
-            xmlns="http://www.w3.org/2000/svg"
-            className="mr-2 h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-            />
-          </svg>
-          Add to cart
-        </button>
+        {random ? (
+          ""
+        ) : (
+          <button className="pointerEvents flex items-center justify-center bg-gray-900 px-5 py-2.5 text-sm text-white transition hover:bg-gray-700 rounded-md">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="mr-2 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
+            Add to cart
+          </button>
+        )}
       </div>
     </div>
   );

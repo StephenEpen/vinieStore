@@ -10,7 +10,6 @@ const ProductCollection = () => {
 
   useEffect(() => {
     setProductList(products);
-    console.log(products)
   }, [products]);
 
   return (
@@ -38,6 +37,7 @@ const ProductCollection = () => {
                 name={item.name}
                 price={item.price}
                 colors={item.colors}
+                random={false}
               />
             </div>
           ))}
